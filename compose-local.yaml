@@ -1,0 +1,8 @@
+services:
+  amplify-dev:  
+    build:
+      context: ./amplify-cli/
+      dockerfile: Dockerfile
+    volumes:
+      - ./amplify-cli/src:/app
+    command: bash
