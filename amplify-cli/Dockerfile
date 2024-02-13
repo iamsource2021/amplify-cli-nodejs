@@ -1,27 +1,49 @@
-# Usa una imagen base de Node
-FROM node:14
+# Dockerfile
 
-# Etiqueta para identificar al creador/mantenedor de la imagen
-LABEL maintainer="Eduardo Ortiz <eortiz@tracsa.com.mx>"
+# **********
+# base stage
+# **********
+FROM node:20.9.0-alpine AS base
 
-# Instala las herramientas de desarrollo requeridas (puedes agregar más si lo necesitas)
-RUN apt-get update \
-    && apt-get install -y git xdg-utils \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Establece el directorio de trabajo
 WORKDIR /app
 
-# Copia el contenido del directorio actual al directorio /app dentro del contenedor
-COPY ./src /app
+# **********
+# deps stage
+# **********
+FROM base AS deps
 
-# Instala Amplify CLI
-RUN npm install -g @aws-amplify/cli
+# Copy package.json to /app
+COPY package*.json /app/
 
-RUN amplify -v
-# Exponer el puerto si es necesario
-# EXPOSE 3000
+# Instal dependencies according to the lockfile
+# RUN npm install
 
-# Comando por defecto para iniciar el contenedor
-CMD ["bash"]
+# Disable the telementary
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# ***********
+# inter stage
+# ***********
+FROM deps AS inter
+
+# Copy all other files excluding the ones in .dockerignore
+COPY . /app
+
+# exposing the port
+EXPOSE 3000
+
+# **********
+# prod stage
+# **********
+FROM inter AS prod
+
+RUN npm run build
+
+CMD ["npm", "start"]
+
+# **********
+# dev stage
+# **********
+FROM inter AS dev
+
+CMD ["npm", "run", "dev"]

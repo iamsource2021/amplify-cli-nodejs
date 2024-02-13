@@ -2,7 +2,13 @@ services:
   amplify-dev:  
     build:
       context: ./amplify-cli/
-      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "3000:3000"  
     volumes:
-      - ./amplify-cli/src:/app
-    command: bash
+      - C:\Users\eortiz\vscode\amplify\amplify-landing-pre-register:/app
+    restart: always
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true 
