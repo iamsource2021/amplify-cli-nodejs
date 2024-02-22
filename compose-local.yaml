@@ -4,9 +4,16 @@ services:
       context: ./amplify-cli/
       target: dev
     ports:
-      - "3000:3000"  
+      - "3000:3000" 
+    env_file:
+      - .env   
     volumes:
-      - C:\Users\eortiz\vscode\amplify\amplify-landing-pre-register:/app
+      - C:\Users\eortiz\dev\next-amplified:/app
+      - C:\Users\eortiz\.aws:/root/.aws
+      # - C:\Users\eortiz\dev\next-amplified\package.json:/app/package.json
+    # command: bash -c "npm install && npm run dev" # Primera ves que se intale se debe instalar
+    # command: bash -c "npm create next-app@14 -- next-amplified --ts --no-eslint --src-dir --import-alias '@/*' --no-tailwind --app"
+    # command: sleep 900
     restart: always
     environment:
       - NODE_ENV=development
